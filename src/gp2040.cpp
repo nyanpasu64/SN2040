@@ -9,12 +9,10 @@
 
 #include "addons/analog.h" // Inputs for Core0
 #include "addons/bootsel_button.h"
-#include "addons/dualdirectional.h"
 #include "addons/extra_button.h"
 #include "addons/i2canalog1219.h"
 #include "addons/jslider.h"
 #include "addons/playernum.h"
-#include "addons/reverse.h"
 #include "addons/turbo.h"
 
 // Pico includes
@@ -39,7 +37,7 @@ GP2040::~GP2040() {
 }
 
 void GP2040::setup() {
-    // Setup Gamepad and Gamepad Storage
+	// Setup Gamepad and Gamepad Storage
 	Gamepad * gamepad = Storage::getInstance().GetGamepad();
 	gamepad->setup();
 
@@ -50,13 +48,13 @@ void GP2040::setup() {
 				Storage::getInstance().SetConfigMode(true);
 				initialize_driver(INPUT_MODE_CONFIG);
 				ConfigManager::getInstance().setup(CONFIG_TYPE_WEB);
-				break;	
+				break;
 			}
 
 		case BootAction::ENTER_USB_MODE:
 			{
 				reset_usb_boot(0, 0);
-				break;	
+				break;
 			}
 
 		case BootAction::SET_INPUT_MODE_HID:
@@ -87,11 +85,9 @@ void GP2040::setup() {
 	// Setup Add-ons
 	addons.LoadAddon(new AnalogInput(), CORE0_INPUT);
 	addons.LoadAddon(new BootselButtonAddon(), CORE0_INPUT);
-	addons.LoadAddon(new DualDirectionalInput(), CORE0_INPUT);
-  	addons.LoadAddon(new ExtraButtonAddon(), CORE0_INPUT);
+	addons.LoadAddon(new ExtraButtonAddon(), CORE0_INPUT);
 	addons.LoadAddon(new I2CAnalog1219Input(), CORE0_INPUT);
 	addons.LoadAddon(new JSliderInput(), CORE0_INPUT);
-	addons.LoadAddon(new ReverseInput(), CORE0_INPUT);
 	addons.LoadAddon(new TurboInput(), CORE0_INPUT);
 	addons.LoadAddon(new PlayerNumAddon(), CORE0_USBREPORT);
 }
@@ -127,7 +123,7 @@ void GP2040::run() {
 
 		// Pre-Process add-ons for MPGS
 		addons.PreprocessAddons(ADDON_PROCESS::CORE0_INPUT);
-		
+
 		gamepad->process(); // process through MPGS
 
 		// (Post) Process for add-ons

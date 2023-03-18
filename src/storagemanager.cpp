@@ -19,7 +19,6 @@
 #include "addons/board_led.h"
 #include "addons/bootsel_button.h"
 #include "addons/buzzerspeaker.h"
-#include "addons/dualdirectional.h"
 #include "addons/extra_button.h"
 #include "addons/i2canalog1219.h"
 #include "addons/i2cdisplay.h"
@@ -27,7 +26,6 @@
 #include "addons/neopicoleds.h"
 #include "addons/playernum.h"
 #include "addons/pleds.h"
-#include "addons/reverse.h"
 #include "addons/turbo.h"
 
 #include "bitmaps.h"
@@ -71,24 +69,6 @@ void Storage::setDefaultBoardOptions()
 {
 	// Set GP2040 version string and 0 mem after
 	boardOptions.hasBoardOptions   = false;
-	boardOptions.pinDpadUp         = PIN_DPAD_UP;
-	boardOptions.pinDpadDown       = PIN_DPAD_DOWN;
-	boardOptions.pinDpadLeft       = PIN_DPAD_LEFT;
-	boardOptions.pinDpadRight      = PIN_DPAD_RIGHT;
-	boardOptions.pinButtonB1       = PIN_BUTTON_B1;
-	boardOptions.pinButtonB2       = PIN_BUTTON_B2;
-	boardOptions.pinButtonB3       = PIN_BUTTON_B3;
-	boardOptions.pinButtonB4       = PIN_BUTTON_B4;
-	boardOptions.pinButtonL1       = PIN_BUTTON_L1;
-	boardOptions.pinButtonR1       = PIN_BUTTON_R1;
-	boardOptions.pinButtonL2       = PIN_BUTTON_L2;
-	boardOptions.pinButtonR2       = PIN_BUTTON_R2;
-	boardOptions.pinButtonS1       = PIN_BUTTON_S1;
-	boardOptions.pinButtonS2       = PIN_BUTTON_S2;
-	boardOptions.pinButtonL3       = PIN_BUTTON_L3;
-	boardOptions.pinButtonR3       = PIN_BUTTON_R3;
-	boardOptions.pinButtonA1       = PIN_BUTTON_A1;
-	boardOptions.pinButtonA2       = PIN_BUTTON_A2;
 	boardOptions.buttonLayout      = BUTTON_LAYOUT;
 	boardOptions.buttonLayoutRight = BUTTON_LAYOUT_RIGHT;
 	boardOptions.splashMode        = SPLASH_MODE;
@@ -113,7 +93,7 @@ void Storage::setDefaultBoardOptions()
 		.buttonPadding = 2
 	};
 	boardOptions.buttonLayoutCustomOptions.params = params;
-	
+
 	ButtonLayoutParams paramsRight = {
 		.layoutRight = BUTTON_LAYOUT_RIGHT,
 		.startX = 8,
@@ -168,7 +148,6 @@ void Storage::setDefaultAddonOptions()
 	addonOptions.i2cAnalog1219Address   = I2C_ANALOG1219_ADDRESS;
 	addonOptions.onBoardLedMode			= BOARD_LED_TYPE;
 	addonOptions.dualDirDpadMode        = DUAL_DIRECTIONAL_STICK_MODE;
-	addonOptions.dualDirCombineMode     = DUAL_DIRECTIONAL_COMBINE_MODE;
 	addonOptions.analogAdcPinX      	= ANALOG_ADC_VRX;
 	addonOptions.analogAdcPinY      	= ANALOG_ADC_VRY;
 	addonOptions.bootselButtonMap		= BOOTSEL_BUTTON_MASK;
@@ -181,12 +160,10 @@ void Storage::setDefaultAddonOptions()
 	addonOptions.BoardLedAddonEnabled   = BOARD_LED_ENABLED;
 	addonOptions.BootselButtonAddonEnabled = BOOTSEL_BUTTON_ENABLED;
 	addonOptions.BuzzerSpeakerAddonEnabled = BUZZER_ENABLED;
-	addonOptions.DualDirectionalInputEnabled = DUAL_DIRECTIONAL_ENABLED;
 	addonOptions.ExtraButtonAddonEnabled = EXTRA_BUTTON_ENABLED;
 	addonOptions.I2CAnalog1219InputEnabled = I2C_ANALOG1219_ENABLED;
 	addonOptions.JSliderInputEnabled    = JSLIDER_ENABLED;
 	addonOptions.PlayerNumAddonEnabled  = PLAYERNUM_ADDON_ENABLED;
-	addonOptions.ReverseInputEnabled    = REVERSE_ENABLED;
 	addonOptions.TurboInputEnabled      = TURBO_ENABLED;
 	setAddonOptions(addonOptions);
 }

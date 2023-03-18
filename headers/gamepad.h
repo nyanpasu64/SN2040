@@ -15,21 +15,6 @@ extern uint64_t getMicro();
 
 #define GAMEPAD_FEATURE_REPORT_SIZE 32
 
-struct GamepadButtonMapping
-{
-	GamepadButtonMapping(uint8_t p, uint16_t bm) : pin(p), pinMask((1 << p)), buttonMask(bm) {}
-
-	uint8_t pin;
-	uint32_t pinMask;
-	const uint16_t buttonMask;
-
-	inline void setPin(uint8_t p)
-	{
-		pin = p;
-		pinMask = 1 << p;
-	}
-};
-
 class Gamepad : public MPGS
 {
 public:
@@ -49,25 +34,6 @@ public:
 #endif
 	}
 	GamepadState rawState;
-	GamepadButtonMapping *mapDpadUp;
-	GamepadButtonMapping *mapDpadDown;
-	GamepadButtonMapping *mapDpadLeft;
-	GamepadButtonMapping *mapDpadRight;
-	GamepadButtonMapping *mapButtonB1;
-	GamepadButtonMapping *mapButtonB2;
-	GamepadButtonMapping *mapButtonB3;
-	GamepadButtonMapping *mapButtonB4;
-	GamepadButtonMapping *mapButtonL1;
-	GamepadButtonMapping *mapButtonR1;
-	GamepadButtonMapping *mapButtonL2;
-	GamepadButtonMapping *mapButtonR2;
-	GamepadButtonMapping *mapButtonS1;
-	GamepadButtonMapping *mapButtonS2;
-	GamepadButtonMapping *mapButtonL3;
-	GamepadButtonMapping *mapButtonR3;
-	GamepadButtonMapping *mapButtonA1;
-	GamepadButtonMapping *mapButtonA2;
-	GamepadButtonMapping **gamepadMappings;
 };
 
 #endif
