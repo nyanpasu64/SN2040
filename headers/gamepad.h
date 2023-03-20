@@ -34,6 +34,8 @@ public:
 #endif
 	}
 	GamepadState rawState;
+	uint offset = 0;
+	uint sm = 0;
 };
 
 #endif
