@@ -1,3 +1,41 @@
+# SN2040: RP2040/Pico SNES controller to USB adapter
+
+SN2040 is a Raspberry Pi Pico firmware (based off GP2040-CE) which acts as a SNES controller to USB adapter, plugging into a PC (or some game consoles). This way you don't have to modify or replace your SNES controller's PCB with a USB-compatible one, to use your controller with a PC.
+
+## Comparison
+
+This is one of the cheapest ways to use a real SNES controller on a PC, requiring only a $4 Raspberry Pi Pico, cutting your controller's original cable (or buying a [female SNES controller connector](https://www.aliexpress.us/item/2251832652082183.html) and soldering it to a PCB, not supplied), a Micro-USB cable, and soldering equipment (and hot-gluing the Pico into whatever plastic case you have lying around, I used a Magic Joy Box for extra irony).
+
+In comparison, the [Raphnet adapter](https://www.raphnet-tech.com/products/snes2usb_1player_adapter_v2/index.php) costs over $20. The Arduino-based [DaemonBite](https://github.com/MickGyver/DaemonBite-Retro-Controllers-USB) and [Triple Controller](https://github.com/timville85/TripleController) cost $10-20 to purchase; if you build them yourself, they require Arduinos which officially cost over $20, though you can get compatible clones for under $4 on AliExpress, actually *cheaper* than a Pi Pico! ([Triple Controller parts list](https://github.com/timville85/TripleController#tested-parts)) The Arduino adapters have slightly less latency in their USB stack (under 1ms of difference), but their current firmware does not support XInput over USB.
+
+## Assembly
+
+First install the Pico C/C++ SDK ([instructions](https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf)) and build this project (producing a `GP2040-CE_0.6.2_Pico.uf2` file). Then plug the Pi Pico into your system and drag the `.uf2` file into the Pico's virtual flash drive. Now disconnect the Pico from your PC and proceed to hardware assembly:
+
+Take a SNES controller cable with plug cut off. (See the [connector's pinout](https://dragaosemchama.com/wp-content/uploads/2015/11/snes-300x248.png), [source](https://dragaosemchama.com/2015/11/snes-controller-to-pc-adapter-with-arduino-micro/).)
+
+- Solder its 5V wire (white) to Pico pin 36 (3.3V output).
+- Solder its clock, latch, and data pins (yellow, orange, red) to Pico pins 9-11 (GPIO 6-8).
+- Solder its ground wire (brown) to any Pico ground pin (see [pinout diagram](https://datasheets.raspberrypi.com/pico/Pico-R3-A4-Pinout.pdf)).
+
+These instructions run the SNES controller at 3.3 volts rather than 5 volts, which seems to work largely fine (previously documented at [Reddit](https://www.reddit.com/r/raspberry_pi/comments/4yv74o/snes_controller_voltage/), [deleted comments](https://www.unddit.com/r/raspberry_pi/comments/4yv74o/snes_controller_voltage/)).
+
+If you instead solder the SNES 5V wire to the Pico's 5V pins (40 or 39), the controller will seem to work, but the controller will be driving 5V through its data output line, to the Pico's Pin 11 (GPIO 8), which may fry the Pico over time. I've run it this way by mistake for a day or so before switching to 3.3 volts, and the Pico still seems to be working fine... for now...
+
+### Unplugging your controller
+
+If you have ordered SNES controller ports, you could design and order a custom PCB with a controller port leading to a Pi Pico or RP2040 chip's GPIO pins, allowing for easy controller unplugging. I did not attempt this.
+
+If you have multiple official SNES controller cables, you can swap the controller between a regular cable and one with a Pico hard-wired to the other side, by disassembling the controller and disconnecting the cable from the PCB inside. This is less convenient than unplugging the SNES controller normally though.
+
+## Usage
+
+Pressing `Select+Start+D-Pad` will map the hardware D-Pad to the left or right emulated analog stick, instead of D-Pad. Press `Select+Start+Down` to reset the D-Pad to normal functionality.
+
+For a full list of preprogrammed button shortcuts, see https://gp2040-ce.info/#/usage and https://gp2040-ce.info/#/gp2040-shortcuts. Be sure to pick "Nintendo Switch" button labels for correct face button names.
+
+Original README:
+
 # GP2040-CE | Community Edition Firmware
 
 GP2040-CE is a gamepad firmware for the Raspberry Pi Pico and other boards based on the RP2040 microcontroller, and provides high performance with a rich feature set across multiple platforms. GP2040-CE is compatible with PC, MiSTer, Android, Raspberry Pi, Nintendo Switch, PS3 and PS4 (legacy controller support).
