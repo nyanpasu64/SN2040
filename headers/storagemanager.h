@@ -45,24 +45,6 @@ struct ButtonLayoutCustomOptions
 struct BoardOptions
 {
 	bool hasBoardOptions;
-	uint8_t pinDpadUp;
-	uint8_t pinDpadDown;
-	uint8_t pinDpadLeft;
-	uint8_t pinDpadRight;
-	uint8_t pinButtonB1;
-	uint8_t pinButtonB2;
-	uint8_t pinButtonB3;
-	uint8_t pinButtonB4;
-	uint8_t pinButtonL1;
-	uint8_t pinButtonR1;
-	uint8_t pinButtonL2;
-	uint8_t pinButtonR2;
-	uint8_t pinButtonS1;
-	uint8_t pinButtonS2;
-	uint8_t pinButtonL3;
-	uint8_t pinButtonR3;
-	uint8_t pinButtonA1;
-	uint8_t pinButtonA2;
 	ButtonLayout buttonLayout;
 	ButtonLayoutRight buttonLayoutRight;
 	SplashMode splashMode;
@@ -107,7 +89,6 @@ struct AddonOptions {
 	uint8_t pinDualDirLeft;
 	uint8_t pinDualDirRight;
 	DpadMode dualDirDpadMode;    // LS/DP/RS
-	uint8_t dualDirCombineMode; // Mix/Gamepad/Dual/None
 	OnBoardLedMode onBoardLedMode;
 	uint8_t analogAdcPinX;
 	uint8_t analogAdcPinY;
@@ -136,7 +117,6 @@ struct AddonOptions {
 	uint8_t BoardLedAddonEnabled;
 	uint8_t BootselButtonAddonEnabled;
 	uint8_t BuzzerSpeakerAddonEnabled;
-	uint8_t DualDirectionalInputEnabled;
 	uint8_t ExtraButtonAddonEnabled;
 	uint8_t I2CAnalog1219InputEnabled;
 	//bool I2CDisplayAddonEnabled; // I2C is special case
@@ -144,7 +124,6 @@ struct AddonOptions {
 	//bool NeoPicoLEDAddonEnabled; // NeoPico is special case
 	//bool PlayerLEDAddonEnabled; // PlayerLED is special case
 	uint8_t PlayerNumAddonEnabled;
-	uint8_t ReverseInputEnabled;
 	uint8_t TurboInputEnabled;
 	uint8_t SliderSOCDInputEnabled;
 	uint32_t checksum;
@@ -197,14 +176,14 @@ public:
 		static Storage instance;
 		return instance;
 	}
-	
+
 	void setBoardOptions(BoardOptions);	// Board Options
 	void setDefaultBoardOptions();
 	BoardOptions getBoardOptions();
-	
+
 	void setPreviewBoardOptions(const BoardOptions&);	// Preview Board Options
 	BoardOptions getPreviewBoardOptions();
-	
+
 	void setAddonOptions(AddonOptions); // Add-On Options
 	void setDefaultAddonOptions();
 	AddonOptions getAddonOptions();

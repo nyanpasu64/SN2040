@@ -111,8 +111,8 @@ DynamicJsonDocument get_post_data()
 
 // LWIP callback on HTTP POST to validate the URI
 err_t httpd_post_begin(void *connection, const char *uri, const char *http_request,
-                       uint16_t http_request_len, int content_len, char *response_uri,
-                       uint16_t response_uri_len, uint8_t *post_auto_wnd)
+					   uint16_t http_request_len, int content_len, char *response_uri,
+					   uint16_t response_uri_len, uint8_t *post_auto_wnd)
 {
 	LWIP_UNUSED_ARG(http_request);
 	LWIP_UNUSED_ARG(http_request_len);
@@ -205,7 +205,7 @@ std::string setDisplayOptions(BoardOptions& boardOptions)
 	boardOptions.buttonLayoutCustomOptions.params.startY 		 	       = doc["buttonLayoutCustomOptions"]["params"]["startY"];
 	boardOptions.buttonLayoutCustomOptions.params.buttonRadius      	   = doc["buttonLayoutCustomOptions"]["params"]["buttonRadius"];
 	boardOptions.buttonLayoutCustomOptions.params.buttonPadding     	   = doc["buttonLayoutCustomOptions"]["params"]["buttonPadding"];
-	
+
 	boardOptions.buttonLayoutCustomOptions.paramsRight.layoutRight 	   	   = doc["buttonLayoutCustomOptions"]["paramsRight"]["layout"];
 	boardOptions.buttonLayoutCustomOptions.paramsRight.startX 		 	   = doc["buttonLayoutCustomOptions"]["paramsRight"]["startX"];
 	boardOptions.buttonLayoutCustomOptions.paramsRight.startY 		 	   = doc["buttonLayoutCustomOptions"]["paramsRight"]["startY"];
@@ -227,7 +227,7 @@ std::string setPreviewDisplayOptions()
 {
 	BoardOptions boardOptions = Storage::getInstance().getPreviewBoardOptions();
 	std::string response = setDisplayOptions(boardOptions);
-	ConfigManager::getInstance().setPreviewBoardOptions(boardOptions); 
+	ConfigManager::getInstance().setPreviewBoardOptions(boardOptions);
 	return response;
 }
 
@@ -256,7 +256,7 @@ std::string getDisplayOptions() // Manually set Document Attributes for the disp
 	doc["buttonLayoutCustomOptions"]["params"]["startY"] 		 	 = boardOptions.buttonLayoutCustomOptions.params.startY;
 	doc["buttonLayoutCustomOptions"]["params"]["buttonRadius"]  	 = boardOptions.buttonLayoutCustomOptions.params.buttonRadius;
 	doc["buttonLayoutCustomOptions"]["params"]["buttonPadding"] 	 = boardOptions.buttonLayoutCustomOptions.params.buttonPadding;
-	
+
 	doc["buttonLayoutCustomOptions"]["paramsRight"]["layout"] 		 = boardOptions.buttonLayoutCustomOptions.paramsRight.layoutRight;
 	doc["buttonLayoutCustomOptions"]["paramsRight"]["startX"] 		 = boardOptions.buttonLayoutCustomOptions.paramsRight.startX;
 	doc["buttonLayoutCustomOptions"]["paramsRight"]["startY"] 		 = boardOptions.buttonLayoutCustomOptions.paramsRight.startY;
@@ -265,24 +265,6 @@ std::string getDisplayOptions() // Manually set Document Attributes for the disp
 
 	Gamepad * gamepad = Storage::getInstance().GetGamepad();
 	auto usedPins = doc.createNestedArray("usedPins");
-	usedPins.add(gamepad->mapDpadUp->pin);
-	usedPins.add(gamepad->mapDpadDown->pin);
-	usedPins.add(gamepad->mapDpadLeft->pin);
-	usedPins.add(gamepad->mapDpadRight->pin);
-	usedPins.add(gamepad->mapButtonB1->pin);
-	usedPins.add(gamepad->mapButtonB2->pin);
-	usedPins.add(gamepad->mapButtonB3->pin);
-	usedPins.add(gamepad->mapButtonB4->pin);
-	usedPins.add(gamepad->mapButtonL1->pin);
-	usedPins.add(gamepad->mapButtonR1->pin);
-	usedPins.add(gamepad->mapButtonL2->pin);
-	usedPins.add(gamepad->mapButtonR2->pin);
-	usedPins.add(gamepad->mapButtonS1->pin);
-	usedPins.add(gamepad->mapButtonS2->pin);
-	usedPins.add(gamepad->mapButtonL3->pin);
-	usedPins.add(gamepad->mapButtonR3->pin);
-	usedPins.add(gamepad->mapButtonA1->pin);
-	usedPins.add(gamepad->mapButtonA2->pin);
 
 	return serialize_json(doc);
 }
@@ -398,24 +380,6 @@ std::string getLedOptions()
 
 	Gamepad * gamepad = Storage::getInstance().GetGamepad();
 	auto usedPins = doc.createNestedArray("usedPins");
-	usedPins.add(gamepad->mapDpadUp->pin);
-	usedPins.add(gamepad->mapDpadDown->pin);
-	usedPins.add(gamepad->mapDpadLeft->pin);
-	usedPins.add(gamepad->mapDpadRight->pin);
-	usedPins.add(gamepad->mapButtonB1->pin);
-	usedPins.add(gamepad->mapButtonB2->pin);
-	usedPins.add(gamepad->mapButtonB3->pin);
-	usedPins.add(gamepad->mapButtonB4->pin);
-	usedPins.add(gamepad->mapButtonL1->pin);
-	usedPins.add(gamepad->mapButtonR1->pin);
-	usedPins.add(gamepad->mapButtonL2->pin);
-	usedPins.add(gamepad->mapButtonR2->pin);
-	usedPins.add(gamepad->mapButtonS1->pin);
-	usedPins.add(gamepad->mapButtonS2->pin);
-	usedPins.add(gamepad->mapButtonL3->pin);
-	usedPins.add(gamepad->mapButtonR3->pin);
-	usedPins.add(gamepad->mapButtonA1->pin);
-	usedPins.add(gamepad->mapButtonA2->pin);
 
 	BoardOptions boardOptions = Storage::getInstance().getBoardOptions();
 	if (boardOptions.i2cSDAPin != (uint8_t)-1)
@@ -440,24 +404,6 @@ std::string setPinMappings()
 
 	BoardOptions boardOptions = Storage::getInstance().getBoardOptions();
 	boardOptions.hasBoardOptions = true;
-	boardOptions.pinDpadUp    = doc["Up"];
-	boardOptions.pinDpadDown  = doc["Down"];
-	boardOptions.pinDpadLeft  = doc["Left"];
-	boardOptions.pinDpadRight = doc["Right"];
-	boardOptions.pinButtonB1  = doc["B1"];
-	boardOptions.pinButtonB2  = doc["B2"];
-	boardOptions.pinButtonB3  = doc["B3"];
-	boardOptions.pinButtonB4  = doc["B4"];
-	boardOptions.pinButtonL1  = doc["L1"];
-	boardOptions.pinButtonR1  = doc["R1"];
-	boardOptions.pinButtonL2  = doc["L2"];
-	boardOptions.pinButtonR2  = doc["R2"];
-	boardOptions.pinButtonS1  = doc["S1"];
-	boardOptions.pinButtonS2  = doc["S2"];
-	boardOptions.pinButtonL3  = doc["L3"];
-	boardOptions.pinButtonR3  = doc["R3"];
-	boardOptions.pinButtonA1  = doc["A1"];
-	boardOptions.pinButtonA2  = doc["A2"];
 
 	Storage::getInstance().setBoardOptions(boardOptions);
 
@@ -467,26 +413,8 @@ std::string setPinMappings()
 std::string getPinMappings()
 {
 	DynamicJsonDocument doc(LWIP_HTTPD_POST_MAX_PAYLOAD_LEN);
-	
+
 	Gamepad * gamepad = Storage::getInstance().GetGamepad();
-	doc["Up"]    = gamepad->mapDpadUp->pin;
-	doc["Down"]  = gamepad->mapDpadDown->pin;
-	doc["Left"]  = gamepad->mapDpadLeft->pin;
-	doc["Right"] = gamepad->mapDpadRight->pin;
-	doc["B1"]    = gamepad->mapButtonB1->pin;
-	doc["B2"]    = gamepad->mapButtonB2->pin;
-	doc["B3"]    = gamepad->mapButtonB3->pin;
-	doc["B4"]    = gamepad->mapButtonB4->pin;
-	doc["L1"]    = gamepad->mapButtonL1->pin;
-	doc["R1"]    = gamepad->mapButtonR1->pin;
-	doc["L2"]    = gamepad->mapButtonL2->pin;
-	doc["R2"]    = gamepad->mapButtonR2->pin;
-	doc["S1"]    = gamepad->mapButtonS1->pin;
-	doc["S2"]    = gamepad->mapButtonS2->pin;
-	doc["L3"]    = gamepad->mapButtonL3->pin;
-	doc["R3"]    = gamepad->mapButtonR3->pin;
-	doc["A1"]    = gamepad->mapButtonA1->pin;
-	doc["A2"]    = gamepad->mapButtonA2->pin;
 
 	return serialize_json(doc);
 }
@@ -520,7 +448,6 @@ std::string setAddonOptions()
 	addonOptions.pinDualDirLeft 	= doc["dualDirLeftPin"] == -1 ? 0xFF : doc["dualDirLeftPin"];
 	addonOptions.pinDualDirRight 	= doc["dualDirRightPin"] == -1 ? 0xFF : doc["dualDirRightPin"];
 	addonOptions.dualDirDpadMode    = doc["dualDirDpadMode"];
-	addonOptions.dualDirCombineMode = doc["dualDirCombineMode"];
 	addonOptions.analogAdcPinX = doc["analogAdcPinX"] == -1 ? 0xFF : doc["analogAdcPinX"];
 	addonOptions.analogAdcPinY = doc["analogAdcPinY"] == -1 ? 0xFF : doc["analogAdcPinY"];
 	addonOptions.bootselButtonMap = doc["bootselButtonMap"];
@@ -548,13 +475,11 @@ std::string setAddonOptions()
 	addonOptions.BoardLedAddonEnabled = doc["BoardLedAddonEnabled"];
 	addonOptions.BuzzerSpeakerAddonEnabled = doc["BuzzerSpeakerAddonEnabled"];
 	addonOptions.BootselButtonAddonEnabled = doc["BootselButtonAddonEnabled"];
-	addonOptions.DualDirectionalInputEnabled = doc["DualDirectionalInputEnabled"];
 	addonOptions.ExtraButtonAddonEnabled = doc["ExtraButtonAddonEnabled"];
 	addonOptions.I2CAnalog1219InputEnabled = doc["I2CAnalog1219InputEnabled"];
 	addonOptions.JSliderInputEnabled = doc["JSliderInputEnabled"];
 	addonOptions.SliderSOCDInputEnabled = doc["SliderSOCDInputEnabled"];
 	addonOptions.PlayerNumAddonEnabled = doc["PlayerNumAddonEnabled"];
-	addonOptions.ReverseInputEnabled = doc["ReverseInputEnabled"];
 	addonOptions.TurboInputEnabled = doc["TurboInputEnabled"];
 
 	Storage::getInstance().setAddonOptions(addonOptions);
@@ -590,7 +515,6 @@ std::string getAddonOptions()
 	doc["dualDirLeftPin"] = addonOptions.pinDualDirLeft == 0xFF ? -1 : addonOptions.pinDualDirLeft;
 	doc["dualDirRightPin"] = addonOptions.pinDualDirRight == 0xFF ? -1 : addonOptions.pinDualDirRight;
 	doc["dualDirDpadMode"] = addonOptions.dualDirDpadMode;
-	doc["dualDirCombineMode"] = addonOptions.dualDirCombineMode;
 	doc["analogAdcPinX"] = addonOptions.analogAdcPinX == 0xFF ? -1 : addonOptions.analogAdcPinX;
 	doc["analogAdcPinY"] = addonOptions.analogAdcPinY == 0xFF ? -1 : addonOptions.analogAdcPinY;
 	doc["bootselButtonMap"] = addonOptions.bootselButtonMap;
@@ -618,35 +542,15 @@ std::string getAddonOptions()
 	doc["BoardLedAddonEnabled"] = addonOptions.BoardLedAddonEnabled;
 	doc["BuzzerSpeakerAddonEnabled"] = addonOptions.BuzzerSpeakerAddonEnabled;
 	doc["BootselButtonAddonEnabled"] = addonOptions.BootselButtonAddonEnabled;
-	doc["DualDirectionalInputEnabled"] = addonOptions.DualDirectionalInputEnabled;
 	doc["ExtraButtonAddonEnabled"] = addonOptions.ExtraButtonAddonEnabled;
 	doc["I2CAnalog1219InputEnabled"] = addonOptions.I2CAnalog1219InputEnabled;
 	doc["JSliderInputEnabled"] = addonOptions.JSliderInputEnabled;
 	doc["SliderSOCDInputEnabled"] = addonOptions.SliderSOCDInputEnabled;
 	doc["PlayerNumAddonEnabled"] = addonOptions.PlayerNumAddonEnabled;
-	doc["ReverseInputEnabled"] = addonOptions.ReverseInputEnabled;
 	doc["TurboInputEnabled"] = addonOptions.TurboInputEnabled;
 
 	Gamepad * gamepad = Storage::getInstance().GetGamepad();
 	auto usedPins = doc.createNestedArray("usedPins");
-	usedPins.add(gamepad->mapDpadUp->pin);
-	usedPins.add(gamepad->mapDpadDown->pin);
-	usedPins.add(gamepad->mapDpadLeft->pin);
-	usedPins.add(gamepad->mapDpadRight->pin);
-	usedPins.add(gamepad->mapButtonB1->pin);
-	usedPins.add(gamepad->mapButtonB2->pin);
-	usedPins.add(gamepad->mapButtonB3->pin);
-	usedPins.add(gamepad->mapButtonB4->pin);
-	usedPins.add(gamepad->mapButtonL1->pin);
-	usedPins.add(gamepad->mapButtonR1->pin);
-	usedPins.add(gamepad->mapButtonL2->pin);
-	usedPins.add(gamepad->mapButtonR2->pin);
-	usedPins.add(gamepad->mapButtonS1->pin);
-	usedPins.add(gamepad->mapButtonS2->pin);
-	usedPins.add(gamepad->mapButtonL3->pin);
-	usedPins.add(gamepad->mapButtonR3->pin);
-	usedPins.add(gamepad->mapButtonA1->pin);
-	usedPins.add(gamepad->mapButtonA2->pin);
 
 	return serialize_json(doc);
 }
