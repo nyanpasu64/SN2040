@@ -32,7 +32,7 @@ endif()
 if(DEFINED ENV{SKIP_WEBBUILD})
   set(SKIP_WEBBUILD $ENV{SKIP_WEBBUILD})
 else()
-  set(SKIP_WEBBUILD FALSE)
+  set(SKIP_WEBBUILD TRUE)
 endif()
 
 
