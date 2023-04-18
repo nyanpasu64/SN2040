@@ -104,6 +104,8 @@ public:
 	GamepadOptions options;
 	GamepadState rawState;
 	GamepadState state;
+	uint offset = 0;
+	uint sm = 0;
 };
 
 #endif

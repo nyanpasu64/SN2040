@@ -5,6 +5,7 @@
 
 // GP2040 Libraries
 #include "gamepad.h"
+#include "snes_rx.pio.h"
 #include "storagemanager.h"
 
 #include "FlashPROM.h"
@@ -18,7 +19,6 @@ uint32_t getMillis() {
 uint64_t getMicro() {
 	return to_us_since_boot(get_absolute_time());
 }
-
 
 static HIDReport hidReport
 {
@@ -58,6 +58,14 @@ static XInputReport xinputReport
 	._reserved = { },
 };
 
+// NeoPico might use pio0. Hopefully we won't enable NeoPico, but switch to pio1 just
+// to be safe.
+static const PIO MY_PIO = pio1;
+
+// 6 and 7 are clock and strobe.
+constexpr static uint PIN_CLK = 6;
+constexpr static uint PIN_DATA = 8;
+
 void Gamepad::setup()
 {
 	//load(); // MPGS loads
@@ -66,7 +74,20 @@ void Gamepad::setup()
 	// Configure pin mapping
 	f2Mask = (GAMEPAD_MASK_A1 | GAMEPAD_MASK_S2);
 
-	// TODO setup shift register
+	const PIO pio = MY_PIO;
+
+	// https://github.com/raspberrypi/pico-examples/blob/master/pio/hello_pio/hello.c
+	// Our assembled program needs to be loaded into this PIO's instruction
+	// memory. This SDK function will find a location (offset) in the
+	// instruction memory where there is enough space for our program. We need
+	// to remember this location!
+	this->offset = pio_add_program(pio, &snes_rx_program);
+
+	// Find a free state machine on our chosen PIO (erroring if there are
+	// none). Configure it to run our program, and start it, using the
+	// helper function we included in our .pio file.
+	this->sm = pio_claim_unused_sm(pio, true);
+	snes_rx_program_init(MY_PIO, sm, offset, PIN_CLK, PIN_DATA);
 
 	#ifdef PIN_SETTINGS
 		gpio_init(PIN_SETTINGS);             // Initialize pin
@@ -118,7 +139,7 @@ void Gamepad::process()
 
 void Gamepad::read()
 {
-	// TODO blocking or PIO read from shift register
+	auto values = snes_rx_program_get(MY_PIO, this->sm);
 
 	#ifdef PIN_SETTINGS
 	state.aux = 0
@@ -126,10 +147,25 @@ void Gamepad::read()
 	;
 	#endif
 
-	state.dpad = 0;
+	// https://en.wikibooks.org/wiki/Super_NES_Programming/Joypad_Input#Joypad_Registers
+	state.dpad = 0
+		| ((values & 0x0800) ? GAMEPAD_MASK_UP    : 0)
+		| ((values & 0x0400) ? GAMEPAD_MASK_DOWN  : 0)
+		| ((values & 0x0200) ? GAMEPAD_MASK_LEFT  : 0)
+		| ((values & 0x0100) ? GAMEPAD_MASK_RIGHT : 0)
+	;
 
-	state.buttons = 0;
+	state.buttons = 0
+		| ((values & 0x8000) ? GAMEPAD_MASK_B1 : 0) // Switch B
+		| ((values & 0x4000) ? GAMEPAD_MASK_B3 : 0) // Switch Y
+		| ((values & 0x2000) ? GAMEPAD_MASK_S1 : 0) // PS3 Select
+		| ((values & 0x1000) ? GAMEPAD_MASK_S2 : 0) // PS3 Start
 
+		| ((values & 0x0080) ? GAMEPAD_MASK_B2 : 0) // Switch A
+		| ((values & 0x0040) ? GAMEPAD_MASK_B4 : 0) // Switch X
+		| ((values & 0x0020) ? GAMEPAD_MASK_L1 : 0) // Switch L
+		| ((values & 0x0010) ? GAMEPAD_MASK_R1 : 0) // Switch R
+	;
 	state.lx = GAMEPAD_JOYSTICK_MID;
 	state.ly = GAMEPAD_JOYSTICK_MID;
 	state.rx = GAMEPAD_JOYSTICK_MID;

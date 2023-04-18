@@ -1,0 +1,98 @@
+; See SNES docs at https://gamefaqs.gamespot.com/snes/916396-super-nintendo/faqs/5395
+; @ "Every 16.67ms".
+
+.program snes_rx
+; Pin mapping:
+; - side 1 is strobe, side 0 is clk
+; - in 0 is data
+.side_set 2
+
+; Time quantum: 2 cycles per 6us.
+.define PUBLIC QUANTUM 2
+
+    ; wait for message from cpu's TX FIFO. Pushed onto our OSR, but ignored.
+    pull            side 0b01       ; s..... CLK
+
+    ; latch
+.define PUBLIC READ_BITS 16
+    set x, (READ_BITS-1)    side 0b11 [3]   ; STROBE CLK, stay for 4 cycles = 12us
+
+    ; While toggling CLK, pull bits from SNES controller to our ISR (see sm_config_set_in_shift).
+bitloop:
+    nop             side 0b01 [1]   ; s..... CLK, stay for 2 cycles = 6us
+    in pins, 1      side 0b00       ; s..... c.., 3us
+    jmp x-- bitloop side 0b00       ; s..... c.., 3us
+    ; Run loop once, and repeat x=15 times. After READ_BITS=16 cycles, loop ends and we
+    ; autopush to CPU's RX FIFO.
+
+
+% c-sdk {
+#include <stdint.h>
+#include <hardware/clocks.h>
+
+/// Output pins: pin_clk, strobe = pin_clk + 1
+/// Input pins: pin_data = button data
+static inline void snes_rx_program_init(PIO pio, uint sm, uint offset, uint pin_clk, uint pin_data) {
+    // See https://github.com/raspberrypi/pico-examples/blob/master/pio/uart_rx/uart_rx.pio
+
+    const uint pin_strobe = (pin_clk + 1) & 31;
+
+    pio_gpio_init(pio, pin_data);
+    pio_gpio_init(pio, pin_clk);
+    pio_gpio_init(pio, pin_strobe);
+
+    pio_sm_config c = snes_rx_program_get_default_config(offset);
+
+    // Initialize output pins
+    pio_sm_set_consecutive_pindirs(pio, sm, pin_clk, 2, true);
+    sm_config_set_sideset_pins(&c, pin_clk);
+
+    // Initialize input pin
+    pio_sm_set_consecutive_pindirs(pio, sm, pin_data, 1, false);
+    sm_config_set_in_pins(&c, pin_data);
+
+    // When SNES controller is unplugged, the real SNES pulls the data line up to analog
+    // 5V so all data reads as digital 0. Enable pull-up resistors to match. (The RP2040
+    // runs at 3.3V... shhhh)
+    gpio_pull_up(pin_data);
+
+    // When pulling data into PIO's ISR, insert bits at right and shift left (matching
+    // https://en.wikibooks.org/wiki/Super_NES_Programming/Joypad_Input#Joypad_Registers
+    // and https://youtu.be/2Dw7NFm1ZfY?t=528), and autopush to CPU's RX FIFO after
+    // READ_BITS=16 bits.
+    sm_config_set_in_shift(&c, false, true, snes_rx_READ_BITS);
+
+    // clock_get_hz:cpu/s / div:cpu/pio / quantum:pio/q = q/6us
+    // solve for div:
+    //   clock_get_hz / quantum / (1'000'000/6) = div
+    // (multiplication is faster than division)
+    //   clock_get_hz * 1/quantum * (6/1'000'000) = div
+    float div = (float)clock_get_hz(clk_sys) * (
+        (1.f / (float)snes_rx_QUANTUM)
+        * (6.f / 1'000'000.f)
+    );
+    sm_config_set_clkdiv(&c, div);
+
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+
+static inline uint16_t snes_rx_program_get(PIO pio, uint sm) {
+    // https://youtu.be/2Dw7NFm1ZfY?t=462 says voltage low (pico 0) is
+    // snes 1 = button pressed?
+
+    // Trigger the PIO to request data from the game controller. The value sent doesn't
+    // matter.
+    pio_sm_put_blocking(pio, sm, 0);
+    // Future: split out "put" and "get" into separate functions, to allow polling
+    // multiple controllers concurrently?
+
+    // 16-bit read from the LSBs of the FIFO
+    // TODO pio_sm_get
+    auto * rxfifo_shift = (io_rw_16 *) &pio->rxf[sm];
+    while (pio_sm_is_rx_fifo_empty(pio, sm))
+        tight_loop_contents();
+    return ~*rxfifo_shift;
+}
+
+%}

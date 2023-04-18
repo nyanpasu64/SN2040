@@ -123,6 +123,10 @@ src/gamepad/GamepadDebouncer.cpp
 src/gamepad/GamepadDescriptors.cpp
 )
 
+pico_generate_pio_header(${PROJECT_NAME}
+    ${CMAKE_CURRENT_LIST_DIR}/src/snes_rx.pio
+)
+
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME}_${CMAKE_PROJECT_VERSION}_${GP2040_BOARDCONFIG})
 
 pico_set_program_name(GP2040-CE "GP2040-CE")
